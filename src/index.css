@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: var(--tg-theme-bg-color, #ffffff);
+  color: var(--tg-theme-text-color, #111111);
+}
+.card { background: var(--tg-theme-secondary-bg-color, #f1f1f4); border-radius: 14px; }
+.hint { color: var(--tg-theme-hint-color, #8a8f98); }
+.btn { background: var(--tg-theme-button-color, #2481cc); color: var(--tg-theme-button-text-color, #ffffff); }
+.btn-out { border: 1px solid var(--tg-theme-button-color, #2481cc); color: var(--tg-theme-button-color, #2481cc); }
