@@ -51,3 +51,17 @@ export function onThemeChange(cb) {
   tg.onEvent('themeChanged', cb)
   return () => tg.offEvent('themeChanged', cb)
 }
+
+export function alertDialog(message) {
+  return new Promise((resolve) => {
+    if (inTelegram) tg.showAlert(message, resolve)
+    else { window.alert(message); resolve() }
+  })
+}
+
+export function popupDialog({ title, message, buttons }) {
+  return new Promise((resolve) => {
+    if (inTelegram) tg.showPopup({ title, message, buttons }, (id) => resolve(id))
+    else resolve(window.confirm(message) ? buttons[0].id : null)
+  })
+}
