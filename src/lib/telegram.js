@@ -34,3 +34,13 @@ export function openLink(url) {
   if (inTelegram) tg.openLink(url)
   else window.open(url, '_blank')
 }
+
+export function openTelegramLink(url) {
+  if (inTelegram) tg.openTelegramLink(url)
+  else window.open(url, '_blank')
+}
+export const canAddToHome = inTelegram && tg.isVersionAtLeast('8.0')
+
+export function addToHome() {
+  if (canAddToHome) tg.addToHomeScreen()
+}
