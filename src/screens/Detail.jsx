@@ -1,6 +1,6 @@
 import Bar from '../components/Bar'
 import { dateKey, lastDays, streak, weekPercent } from '../lib/habits'
-import { confirmDialog, haptic } from '../lib/telegram'
+import { confirmDialog, popupDialog, haptic } from '../lib/telegram'
 
 const DN = ['Ya', 'Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh']
 
@@ -13,6 +13,18 @@ export default function Detail({ habit, onToggle, onDelete }) {
       haptic.notify('warning')
       onDelete(habit.id)
     }
+  }
+
+  async function actions() {
+    haptic.impact('light')
+    const buttons = []
+    if (doneToday) buttons.push({ id: 'reset', type: 'default', text: 'Bugungi belgini olib tashlash' })
+    buttons.push({ id: 'delete', type: 'destructive', text: "Odatni o'chirish" })
+    buttons.push({ id: 'cancel', type: 'cancel' })
+
+    const choice = await popupDialog({ title: habit.name, message: 'Nima qilamiz?', buttons })
+    if (choice === 'reset') onToggle(habit.id)
+    if (choice === 'delete') remove()
   }
 
   return (
@@ -43,8 +55,8 @@ export default function Detail({ habit, onToggle, onDelete }) {
 
       <Bar
         main={{ text: doneToday ? 'Bekor qilish' : 'Bajarildi', onClick: () => onToggle(habit.id) }}
-        secondary={{ text: "O'chirish", onClick: remove }}
+        secondary={{ text: 'Amallar', onClick: actions }}
       />
     </div>
   )
-}   
+}
