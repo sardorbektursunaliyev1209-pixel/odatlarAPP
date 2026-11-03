@@ -1,5 +1,5 @@
 import { haptic } from '../lib/telegram'
-
+import {  openLink } from '../lib/telegram'
 export default function Settings({ settings, onChange }) {
   return (
     <div>
@@ -20,6 +20,12 @@ export default function Settings({ settings, onChange }) {
         <div className="font-medium">Sinxronizatsiya</div>
         <div className="hint text-sm">Odatlar CloudStorage'da saqlanadi</div>
       </div>
+      <button
+  onClick={() => { haptic.impact('light'); openLink('https://myportfolio7701.netlify.app/#home') }}
+  className="btn mt-4 h-11 w-full rounded-xl font-medium"
+>
+  Dasturchi sayti
+</button>
     </div>
   )
 }

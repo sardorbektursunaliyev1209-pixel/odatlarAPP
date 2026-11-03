@@ -30,3 +30,7 @@ export function confirmDialog(message) {
     else resolve(window.confirm(message))
   })
 }
+export function openLink(url) {
+  if (inTelegram) tg.openLink(url)
+  else window.open(url, '_blank')
+}
