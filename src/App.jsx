@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { initTelegram, tg, inTelegram, haptic, setHaptic } from './lib/telegram'
 import { loadJSON, saveJSON } from './lib/storage'
 import { dateKey } from './lib/habits'
+import { notify } from './lib/api'
 import Home from './screens/Home'
 import AddHabit from './screens/AddHabit'
 import Detail from './screens/Detail'
@@ -46,7 +47,10 @@ export default function App() {
     const h = habits.find((x) => x.id === id)
     const completing = !h.days.includes(t)
     haptic.impact('light')
-    if (completing && habits.every((x) => x.id === id || x.days.includes(t))) haptic.notify('success')
+    if (completing && habits.every((x) => x.id === id || x.days.includes(t))) {
+      haptic.notify('success')
+      notify("Bugungi odatlar bajarildi!")
+    }
     setHabits((hs) => hs.map((x) => (x.id === id ? { ...x, days: completing ? [...x.days, t] : x.days.filter((d) => d !== t) } : x)))
   }
 
@@ -66,7 +70,12 @@ export default function App() {
       )}
       {cur.name === 'add' && (
         <AddHabit
-          onSave={(h) => { setHabits((hs) => [...hs, h]); haptic.notify('success'); home() }}
+          onSave={(h) => {
+            setHabits((hs) => [...hs, h])
+            haptic.notify('success')
+            notify("Yangi odat qo'shildi: " + h.name)
+            home()
+          }}
           onCancel={back}
         />
       )}
