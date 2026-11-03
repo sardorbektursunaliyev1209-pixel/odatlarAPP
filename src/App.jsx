@@ -7,7 +7,7 @@ import Home from './screens/Home'
 import AddHabit from './screens/AddHabit'
 import Detail from './screens/Detail'
 import Settings from './screens/Settings'
-
+import {  onThemeChange } from './lib/telegram'
 export default function App() {
   const [habits, setHabits] = useState(null)
   const [settings, setSettings] = useState({ vibration: true })
@@ -41,6 +41,13 @@ export default function App() {
     tg.SettingsButton.onClick(open)
     return () => { tg.SettingsButton.offClick(open); tg.SettingsButton.hide() }
   }, [])
+  useEffect(() => {
+  return onThemeChange(() => {
+    tg.setHeaderColor('secondary_bg_color')
+    tg.setBackgroundColor('bg_color')
+    if (tg.isVersionAtLeast('7.10')) tg.setBottomBarColor('bg_color')
+  })
+}, [])
 
   function toggle(id) {
     const t = dateKey()

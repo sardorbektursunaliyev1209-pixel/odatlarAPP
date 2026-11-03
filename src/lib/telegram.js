@@ -17,6 +17,7 @@ export function initTelegram() {
   if (inTelegram) {
     tg.setHeaderColor('secondary_bg_color')
     tg.setBackgroundColor('bg_color')
+    if (tg.isVersionAtLeast('7.10')) tg.setBottomBarColor('bg_color')
   }
 }
 
@@ -35,6 +36,7 @@ export function openLink(url) {
   else window.open(url, '_blank')
 }
 
+
 export function openTelegramLink(url) {
   if (inTelegram) tg.openTelegramLink(url)
   else window.open(url, '_blank')
@@ -43,4 +45,9 @@ export const canAddToHome = inTelegram && tg.isVersionAtLeast('8.0')
 
 export function addToHome() {
   if (canAddToHome) tg.addToHomeScreen()
+}
+export function onThemeChange(cb) {
+  if (!inTelegram) return () => {}
+  tg.onEvent('themeChanged', cb)
+  return () => tg.offEvent('themeChanged', cb)
 }
