@@ -9,7 +9,7 @@ export default function Bar({ main, secondary }) {
     mb.setParams({ text: main.text, is_visible: true, is_active: !main.disabled })
     main.loading ? mb.showProgress() : mb.hideProgress()
     mb.onClick(main.onClick)
-    return () => mb.offClick(main.onClick)
+    return () => { mb.offClick(main.onClick); mb.hide() }
   }, [main?.text, main?.disabled, main?.loading, main?.onClick])
 
   useEffect(() => {
@@ -18,7 +18,7 @@ export default function Bar({ main, secondary }) {
     if (!secondary) { sb.hide(); return }
     sb.setParams({ text: secondary.text, is_visible: true, position: 'left' })
     sb.onClick(secondary.onClick)
-    return () => sb.offClick(secondary.onClick)
+   return () => { sb.offClick(secondary.onClick); sb.hide() }
   }, [secondary?.text, secondary?.onClick])
 
   if (inTelegram) return null
