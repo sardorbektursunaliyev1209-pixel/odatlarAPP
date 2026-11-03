@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import Bar from '../components/Bar'
 import { ICONS } from '../lib/habits'
-import { haptic, tg, inTelegram } from '../lib/telegram'
+import { haptic, tg, inTelegram, alertDialog } from '../lib/telegram'
 
-export default function AddHabit({ onSave, onCancel }) {
+export default function AddHabit({ habits, onSave, onCancel }) {
   const [name, setName] = useState('')
   const [icon, setIcon] = useState(ICONS[0])
   const valid = name.trim().length >= 2
@@ -16,6 +16,15 @@ export default function AddHabit({ onSave, onCancel }) {
 
   function save() {
     if (!valid) return haptic.notify('error')
+
+    const exists = habits.some(
+      (h) => h.name.toLowerCase() === name.trim().toLowerCase()
+    )
+    if (exists) {
+      haptic.notify('warning')
+      return alertDialog('Bu nomli odat allaqachon bor')
+    }
+
     onSave({ id: Date.now(), name: name.trim(), icon, days: [] })
   }
 
