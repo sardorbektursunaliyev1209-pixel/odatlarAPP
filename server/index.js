@@ -13,6 +13,7 @@ app.use((req, res, next) => {
 
 const TOKEN = process.env.BOT_TOKEN
 const MAX_AGE = 60 * 60
+const WEB_APP_URL = 'https://odatlarapp.vercel.app/'
 
 function verifyInitData(initData) {
   const params = new URLSearchParams(initData)
@@ -40,25 +41,13 @@ function verifyInitData(initData) {
 
 function auth(req, res, next) {
   const user = verifyInitData(req.get('x-init-data') || '')
-  if (!user) return res.status(401).json({ error: 'initData yaroqsiz' })
+  if (!user) {
+    console.log('initData yaroqsiz (imzo yoki auth_date)')
+    return res.status(401).json({ error: 'initData yaroqsiz' })
+  }
   req.user = user
   next()
 }
-
-app.get('/api/me', auth, (req, res) => res.json({ user: req.user }))
-
-app.post('/api/notify', auth, async (req, res) => {
-  const text = String(req.body.text || '').slice(0, 500)
-  const r = await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: req.user.id, text }),
-  })
-  res.status(r.ok ? 200 : 502).json({ ok: r.ok })
-})
-
-app.listen(process.env.PORT, () => console.log('Server ishlayapti: ' + process.env.PORT))
-const WEB_APP_URL = 'https://odatlarapp.vercel.app/'
 
 async function callApi(method, body) {
   const r = await fetch(`https://api.telegram.org/bot${TOKEN}/${method}`, {
@@ -68,6 +57,17 @@ async function callApi(method, body) {
   })
   return r.json()
 }
+
+app.get('/api/me', auth, (req, res) => res.json({ user: req.user }))
+
+app.post('/api/notify', auth, async (req, res) => {
+  const text = String(req.body.text || '').slice(0, 500)
+  console.log('notify keldi, user:', req.user.id)
+  const data = await callApi('sendMessage', { chat_id: req.user.id, text })
+  console.log('Telegram javobi:', data.ok, data.description || '')
+  res.status(data.ok ? 200 : 502).json({ ok: data.ok })
+})
+
 async function handleMessage(msg) {
   const text = msg.text || ''
   if (text.startsWith('/start')) {
@@ -81,12 +81,18 @@ async function handleMessage(msg) {
     })
   }
 }
+
 let offset = 0
 
 async function poll() {
   while (true) {
     try {
       const res = await callApi('getUpdates', { offset, timeout: 30 })
+      if (!res.ok) {
+        console.log('Telegram xatosi:', res.description)
+        await new Promise((r) => setTimeout(r, 5000))
+        continue
+      }
       for (const u of res.result || []) {
         offset = u.update_id + 1
         if (u.message) await handleMessage(u.message)
@@ -98,4 +104,5 @@ async function poll() {
   }
 }
 
+app.listen(process.env.PORT, () => console.log('Server ishlayapti: ' + process.env.PORT))
 poll()
