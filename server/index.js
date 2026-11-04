@@ -52,3 +52,44 @@ app.post('/api/notify', auth, async (req, res) => {
 })
 
 app.listen(process.env.PORT, () => console.log('Server ishlayapti: ' + process.env.PORT))
+const WEB_APP_URL = 'https://odatlarapp.vercel.app/'
+
+async function callApi(method, body) {
+  const r = await fetch(`https://api.telegram.org/bot${TOKEN}/${method}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+  return r.json()
+}
+async function handleMessage(msg) {
+  const text = msg.text || ''
+  if (text.startsWith('/start')) {
+    const name = msg.from.first_name
+    await callApi('sendMessage', {
+      chat_id: msg.chat.id,
+      text: `Salom, ${name}! 👋\n\nKichik odatlar katta natija beradi. Har kuni belgilab bor, seriyani uzma! 🔥`,
+      reply_markup: {
+        inline_keyboard: [[{ text: '🌱 Ilovani ochish', web_app: { url: WEB_APP_URL } }]],
+      },
+    })
+  }
+}
+let offset = 0
+
+async function poll() {
+  while (true) {
+    try {
+      const res = await callApi('getUpdates', { offset, timeout: 30 })
+      for (const u of res.result || []) {
+        offset = u.update_id + 1
+        if (u.message) await handleMessage(u.message)
+      }
+    } catch (e) {
+      console.log('Poll xatosi:', e.message)
+      await new Promise((r) => setTimeout(r, 3000))
+    }
+  }
+}
+
+poll()
