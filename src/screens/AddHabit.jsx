@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import Bar from '../components/Bar'
 import { ICON_KEYS, getIcon, getIconColor } from '../lib/habits'
-import { haptic, tg, inTelegram, alertDialog } from '../lib/telegram'
+import { haptic, tg, inTelegram, alertDialog, playClickSound } from '../lib/telegram'
 
 export default function AddHabit({ habits, onSave, onCancel }) {
   const [name, setName] = useState('')
@@ -25,6 +25,7 @@ export default function AddHabit({ habits, onSave, onCancel }) {
       return alertDialog('Bu nomli odat allaqachon bor')
     }
 
+    playClickSound() // Saqlash tugmasi bosilganda ovoz chiqarish
     onSave({ id: Date.now(), name: name.trim(), icon, days: [] })
   }
 
@@ -46,7 +47,11 @@ export default function AddHabit({ habits, onSave, onCancel }) {
           return (
             <button
               key={key}
-              onClick={() => { setIcon(key); haptic.select() }}
+              onClick={() => { 
+                setIcon(key); 
+                haptic.select(); 
+                playClickSound(); // Belgi tanlanganda ham ovoz chiqishi uchun
+              }}
               aria-label={key}
               className={`flex h-11 w-11 items-center justify-center rounded-xl text-xl ${getIconColor(key)} ${
                 key === icon ? 'ring-2 ring-blue-500' : ''
@@ -60,7 +65,7 @@ export default function AddHabit({ habits, onSave, onCancel }) {
 
       <Bar
         main={{ text: 'Saqlash', disabled: !valid, onClick: save }}
-        secondary={{ text: 'Bekor qilish', onClick: onCancel }}
+        secondary={{ text: 'Bekor qilish', onClick: () => { playClickSound(); onCancel(); } }}
       />
     </div>
   )

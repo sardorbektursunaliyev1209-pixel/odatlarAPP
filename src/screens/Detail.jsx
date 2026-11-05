@@ -1,6 +1,6 @@
 import Bar from '../components/Bar'
 import { dateKey, lastDays, streak, weekPercent, getIcon, getIconColor } from '../lib/habits'
-import { confirmDialog, popupDialog, haptic } from '../lib/telegram'
+import { confirmDialog, popupDialog, haptic, playClickSound } from '../lib/telegram'
 
 const DN = ['Ya', 'Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh']
 
@@ -12,19 +12,24 @@ export default function Detail({ habit, onToggle, onDelete }) {
   async function remove() {
     if (await confirmDialog("Odat o'chirilsinmi?")) {
       haptic.notify('warning')
+      playClickSound()
       onDelete(habit.id)
     }
   }
 
   async function actions() {
     haptic.impact('light')
+    playClickSound()
     const buttons = []
     if (doneToday) buttons.push({ id: 'reset', type: 'default', text: 'Bugungi belgini olib tashlash' })
     buttons.push({ id: 'delete', type: 'destructive', text: "Odatni o'chirish" })
     buttons.push({ id: 'cancel', type: 'cancel' })
 
     const choice = await popupDialog({ title: habit.name, message: 'Nima qilamiz?', buttons })
-    if (choice === 'reset') onToggle(habit.id)
+    if (choice === 'reset') {
+      playClickSound()
+      onToggle(habit.id)
+    }
     if (choice === 'delete') remove()
   }
 
@@ -57,8 +62,18 @@ export default function Detail({ habit, onToggle, onDelete }) {
       </div>
 
       <Bar
-        main={{ text: doneToday ? 'Bekor qilish' : 'Bajarildi', onClick: () => onToggle(habit.id) }}
-        secondary={{ text: 'Amallar', onClick: actions }}
+        main={{ 
+          text: doneToday ? 'Bekor qilish' : 'Bajarildi', 
+          onClick: () => { 
+            playClickSound(); 
+            haptic.impact('medium'); 
+            onToggle(habit.id); 
+          } 
+        }}
+        secondary={{ 
+          text: 'Amallar', 
+          onClick: actions 
+        }}
       />
     </div>
   )

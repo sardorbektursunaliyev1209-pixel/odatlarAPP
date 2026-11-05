@@ -1,11 +1,12 @@
 import Bar from '../components/Bar'
 import ProgressRing from '../components/ProgressRing'
 import HabitCard from '../components/HabitCard'
-import { getUser } from '../lib/telegram'
+import { getUser, haptic, playClickSound } from '../lib/telegram'
 import { dateKey } from '../lib/habits'
 
 export default function Home({ habits, onToggle, onOpen, onAdd }) {
   const done = habits.filter((h) => h.days.includes(dateKey())).length
+  
   return (
     <div>
       <div className="mb-4 flex items-center gap-4">
@@ -30,7 +31,16 @@ export default function Home({ habits, onToggle, onOpen, onAdd }) {
         habits.map((h) => <HabitCard key={h.id} habit={h} onToggle={onToggle} onOpen={onOpen} />)
       )}
 
-      <Bar main={{ text: 'Yangi odat', onClick: onAdd }} />
+      <Bar 
+        main={{ 
+          text: 'Yangi odat', 
+          onClick: () => { 
+            playClickSound(); 
+            haptic.impact('light'); 
+            onAdd(); 
+          } 
+        }} 
+      />
     </div>
   )
 }
