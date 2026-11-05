@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import Bar from '../components/Bar'
-import { ICONS } from '../lib/habits'
+import { ICON_KEYS, getIcon, getIconColor } from '../lib/habits'
 import { haptic, tg, inTelegram, alertDialog } from '../lib/telegram'
 
 export default function AddHabit({ habits, onSave, onCancel }) {
   const [name, setName] = useState('')
-  const [icon, setIcon] = useState(ICONS[0])
+  const [icon, setIcon] = useState(ICON_KEYS[0])
   const valid = name.trim().length >= 2
 
   useEffect(() => {
@@ -41,15 +41,21 @@ export default function AddHabit({ habits, onSave, onCancel }) {
 
       <div className="hint mt-5 text-sm">Belgi</div>
       <div className="mt-2 flex flex-wrap gap-2">
-        {ICONS.map((i) => (
-          <button
-            key={i}
-            onClick={() => { setIcon(i); haptic.select() }}
-            className={`card h-11 w-11 text-xl ${i === icon ? 'ring-2 ring-blue-500' : ''}`}
-          >
-            {i}
-          </button>
-        ))}
+        {ICON_KEYS.map((key) => {
+          const Icon = getIcon(key)
+          return (
+            <button
+              key={key}
+              onClick={() => { setIcon(key); haptic.select() }}
+              aria-label={key}
+              className={`flex h-11 w-11 items-center justify-center rounded-xl text-xl ${getIconColor(key)} ${
+                key === icon ? 'ring-2 ring-blue-500' : ''
+              }`}
+            >
+              <Icon />
+            </button>
+          )
+        })}
       </div>
 
       <Bar

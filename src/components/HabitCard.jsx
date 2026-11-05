@@ -1,14 +1,20 @@
-import { dateKey, streak } from '../lib/habits'
+import { FaFire } from 'react-icons/fa'
+import { dateKey, streak, getIcon, getIconColor } from '../lib/habits'
 
 export default function HabitCard({ habit, onToggle, onOpen }) {
   const done = habit.days.includes(dateKey())
+  const Icon = getIcon(habit.icon)
   return (
     <div className="card mb-2 flex items-center gap-3 p-3">
       <button onClick={() => onOpen(habit.id)} className="flex flex-1 items-center gap-3 text-left">
-        <span className="text-2xl">{habit.icon}</span>
+        <span className={`flex h-10 w-10 items-center justify-center rounded-xl text-xl ${getIconColor(habit.icon)}`}>
+          <Icon />
+        </span>
         <span>
           <span className="block text-sm font-medium">{habit.name}</span>
-          <span className="hint text-xs">🔥 {streak(habit)} kunlik seriya</span>
+          <span className="hint flex items-center gap-1 text-xs">
+            <FaFire className="text-orange-500" /> {streak(habit)} kunlik seriya
+          </span>
         </span>
       </button>
       <button

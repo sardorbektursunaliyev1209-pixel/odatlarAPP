@@ -5,6 +5,7 @@ import {
   inTelegram,
   haptic,
   setHaptic,
+  onThemeChange,
 } from "./lib/telegram";
 import { loadJSON, saveJSON } from "./lib/storage";
 import { dateKey } from "./lib/habits";
@@ -13,7 +14,9 @@ import Home from "./screens/Home";
 import AddHabit from "./screens/AddHabit";
 import Detail from "./screens/Detail";
 import Settings from "./screens/Settings";
-import { onThemeChange } from "./lib/telegram";
+import { FaArrowLeftLong } from "react-icons/fa6";
+import { IoSettingsOutline } from "react-icons/io5";
+
 export default function App() {
   const [habits, setHabits] = useState(null);
   const [settings, setSettings] = useState({ vibration: true });
@@ -38,6 +41,7 @@ export default function App() {
   useEffect(() => {
     if (habits) saveJSON("habits", habits);
   }, [habits]);
+
   useEffect(() => {
     setHaptic(settings.vibration);
     saveJSON("settings", settings);
@@ -64,6 +68,7 @@ export default function App() {
       tg.SettingsButton.hide();
     };
   }, []);
+
   useEffect(() => {
     return onThemeChange(() => {
       tg.setHeaderColor("secondary_bg_color");
@@ -79,7 +84,7 @@ export default function App() {
     haptic.impact("light");
     if (completing && habits.every((x) => x.id === id || x.days.includes(t))) {
       haptic.notify("success");
-      notify("Bugungi odatlar bajarildi!");
+      notify("🎉 Bugungi barcha odatlar bajarildi! Zo'rsiz, seriyani davom ettiring! 🔥");
     }
     setHabits((hs) =>
       hs.map((x) =>
@@ -106,11 +111,17 @@ export default function App() {
             onClick={back}
             className={stack.length > 1 ? "" : "invisible"}
           >
-            ← Orqaga
+            <div className="flex gap-2 items-center"><FaArrowLeftLong size={17} />
+            Orqaga
+</div>
           </button>
           {cur.name === "home" && (
             <button onClick={() => push({ name: "settings" })}>
-              ⚙ Sozlamalar
+              <div className="flex items-center gap-1">
+                <IoSettingsOutline />
+
+               Sozlamalar
+              </div>
             </button>
           )}
         </div>
@@ -133,7 +144,7 @@ export default function App() {
           onSave={(h) => {
             setHabits((hs) => [...hs, h]);
             haptic.notify("success");
-            notify("Yangi odat qo'shildi: " + h.name);
+            notify(`🌱 Yangi odat: ${h.name}\n\nHar kuni bir qadam, seriyani uzmang! 🔥`);
             home();
           }}
           onCancel={back}

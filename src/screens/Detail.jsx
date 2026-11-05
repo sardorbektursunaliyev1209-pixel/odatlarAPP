@@ -1,5 +1,5 @@
 import Bar from '../components/Bar'
-import { dateKey, lastDays, streak, weekPercent } from '../lib/habits'
+import { dateKey, lastDays, streak, weekPercent, getIcon, getIconColor } from '../lib/habits'
 import { confirmDialog, popupDialog, haptic } from '../lib/telegram'
 
 const DN = ['Ya', 'Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh']
@@ -7,6 +7,7 @@ const DN = ['Ya', 'Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh']
 export default function Detail({ habit, onToggle, onDelete }) {
   if (!habit) return null
   const doneToday = habit.days.includes(dateKey())
+  const Icon = getIcon(habit.icon)
 
   async function remove() {
     if (await confirmDialog("Odat o'chirilsinmi?")) {
@@ -30,7 +31,9 @@ export default function Detail({ habit, onToggle, onDelete }) {
   return (
     <div>
       <div className="flex items-center gap-3">
-        <span className="text-4xl">{habit.icon}</span>
+        <span className={`flex h-14 w-14 items-center justify-center rounded-2xl text-3xl ${getIconColor(habit.icon)}`}>
+          <Icon />
+        </span>
         <div className="text-lg font-medium">{habit.name}</div>
       </div>
 
