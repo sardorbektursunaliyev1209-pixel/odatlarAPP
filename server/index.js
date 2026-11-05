@@ -58,7 +58,7 @@ async function callApi(method, body) {
   return r.json()
 }
 
-app.get('/api/me', auth, (req, res) => res.json({ user: req.user }))
+app.get('/api/me',app.get('/healthz', (req, res) => res.send('ok')), auth, (req, res) => res.json({ user: req.user }))
 
 app.post('/api/notify', auth, async (req, res) => {
   const text = String(req.body.text || '').slice(0, 500)
